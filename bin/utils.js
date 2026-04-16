@@ -114,6 +114,14 @@ function parseRawCLI(argv) {
 
 
 const handleGenerate = async () => {
+    if (!state.url && !state.dir) {
+        help()
+        return;
+    }
+    if (state.url && state.dir) {
+        console.log(`error we cant use dir and url switch in the same time`);
+        return;
+    }
     const apis = await parserSwagger(state.url || state.dir)
     console.log("Extracting endpoints...");
 
@@ -144,8 +152,25 @@ export const ${endpoint.operationId} = (${
 }
 
 
+const help = () => {
+    console.log(`
+    -i, --input <path/url>: Specifies the path to your OpenAPI file or the URL of the OpenAPI specification.
+    -t, --ts, --typescript: Use this flag to generate TypeScript code.
+    -a, --axios: Use this flag to generate service code that utilizes the Axios library for HTTP requests.
+    -u, --url <url>: An alternative way to specify the URL of your OpenAPI specification.
+    `)
+}
+
 
 const codeGenerator = (services) => {
+    if (!state.url && !state.dir) {
+        help()
+        return;
+    }
+    if (state.url && state.dir) {
+        console.log(`error we cant use dir and url switch in the same time`);
+        return;
+    }
   const format = state.useTypeScript && "ts" || "js"
   state.useTypeScript && fs.writeFileSync(`types.ts` , types.TsFetchType,"utf-8")
   fs.writeFileSync(`network.${format}` , state.useAxios ?
