@@ -87,7 +87,7 @@ Contributions are welcome! Please feel free to submit a Pull Request or open an 
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
-version : 1.0.0
+version : 1.0.
 
 ---
 

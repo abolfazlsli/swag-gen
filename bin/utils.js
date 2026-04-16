@@ -4,6 +4,7 @@ const state = require("./datas")
 const fs = require('fs');
 const netoworkSource = require("./surces/network")
 const types = require("./surces/types")
+const ora = require("ora")
 
 const handlers ={
      "-i" : {
@@ -127,6 +128,7 @@ const handleGenerate = async () => {
 
     const endpoints = extractEndpoints(apis);
     // console.log("Options:", state.useAxios, state.useTypeScript, state.url, state.dir)
+    // loading()
     let codeoutput = `
 import {network} from "./network"
     `
@@ -134,21 +136,18 @@ import {network} from "./network"
         const requestBodyType = endpoint.requestBody 
         ? generateTypeFromProperties(endpoint.requestBody) 
         : "any";
-            console.log(endpoint.path , endpoint.method ,requestBodyType)
             const endpointgenerated = `
 export const ${endpoint.operationId} = (${
-                endpoint.path.includes("{") 
-                ? (state.useTypeScript ? `${endpoint.path.split("{")[1].replaceAll("}" , "")}: string` : endpoint.path.split("{")[1].replaceAll("}" , "")) 
-                : (["post", "put", "patch"].includes(endpoint.method.toLowerCase()) 
-                    ? (state.useTypeScript ? `data: ${requestBodyType}` : "data") 
-                    : "")
-            }) =>
-        network(\`${endpoint.path.replaceAll("{" , "${")}\` , "${endpoint.method.toUpperCase()}" ${["post", "put", "patch"].includes(endpoint.method.toLowerCase()) && requestBodyType != "any" ? ",data" : ""})
+                endpoint.path.includes("{") && (state.useTypeScript ? `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}: string`)},` : `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}`)},`) || "" 
+            } ${(["post", "put", "patch"].includes(endpoint.method.toLowerCase()) 
+                    ? (state.useTypeScript && endpoint.requestBody != "null" ? `data: ${requestBodyType}` : "data") 
+                    : "")}) =>
+        network(\`${endpoint.path.replaceAll("{" , "${")}\` , "${endpoint.method.toUpperCase()}" ${["post", "put", "patch"].includes(endpoint.method.toLowerCase()) && endpoint.requestBody != "null" ? ",data" : ""})
                  
                  `;
                     codeoutput += endpointgenerated
             })
-            codeGenerator(codeoutput)
+            ora.oraPromise(() => codeGenerator(codeoutput) , {spinner : "dots" , text : "Generating codes ..." , successText : "Codes generated <3 [;"})
 }
 
 
@@ -162,7 +161,7 @@ const help = () => {
 }
 
 
-const codeGenerator = (services) => {
+const codeGenerator = async (services) => {
     if (!state.url && !state.dir) {
         help()
         return;
@@ -181,6 +180,7 @@ const codeGenerator = (services) => {
   fs.writeFileSync(`apiCustom.${format}` , `
     // place to write your custom APIs endpoints
     ` , "utf-8")
+    return
 
 }
 
