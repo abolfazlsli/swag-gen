@@ -171,7 +171,9 @@ const codeGenerator = async (services) => {
         return;
     }
   const format = state.useTypeScript && "ts" || "js"
-  fs.mkdirSync("services")
+  fs.mkdirSync("services" , {
+    recursive : true
+  })
   state.useTypeScript && fs.writeFileSync(`./services/types.ts` , types.TsFetchType,"utf-8")
   fs.writeFileSync(`./services/network.${format}` , state.useAxios ?
      (state.useTypeScript && netoworkSource.TsNetworkAxios || netoworkSource.JsNetworkAxios) 
