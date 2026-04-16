@@ -171,13 +171,14 @@ const codeGenerator = async (services) => {
         return;
     }
   const format = state.useTypeScript && "ts" || "js"
-  state.useTypeScript && fs.writeFileSync(`types.ts` , types.TsFetchType,"utf-8")
-  fs.writeFileSync(`network.${format}` , state.useAxios ?
+  fs.mkdirSync("services")
+  state.useTypeScript && fs.writeFileSync(`./services/types.ts` , types.TsFetchType,"utf-8")
+  fs.writeFileSync(`./services/network.${format}` , state.useAxios ?
      (state.useTypeScript && netoworkSource.TsNetworkAxios || netoworkSource.JsNetworkAxios) 
      :(state.useTypeScript && netoworkSource.TsNetworkFetch || netoworkSource.JsNetworkFetch)  , 'utf-8')
-  fs.writeFileSync(`apiClient.${format}`, services, 'utf-8');
-  fs.writeFileSync(`cookie.${format}` , "" , "utf-8")
-  fs.writeFileSync(`apiCustom.${format}` , `
+  fs.writeFileSync(`./services/apiClient.${format}`, services, 'utf-8');
+  fs.writeFileSync(`./services/cookie.${format}` , "" , "utf-8")
+  fs.writeFileSync(`./services/apiCustom.${format}` , `
     // place to write your custom APIs endpoints
     ` , "utf-8")
     return
