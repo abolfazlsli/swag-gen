@@ -87,8 +87,8 @@ function extractEndpoints(api) {
 function generateTypeFromProperties(properties) {
   if (!properties) return "any";
   
-  const fields = Object.entries(properties).map(([key, value]) => {
-    const type = value.type === 'integer' ? 'number' : value.type || 'any';
+  const fields = Object.entries(properties).map(([key, value] ) => {
+    const type = value.type === 'integer' ? 'number' : value.type || 'any /**\n looks like this data is\'nt json its form data or other types pleas make it valid JSON data in backend \n*/';
     return `${key}: ${type === "array" && "number | string" || type}`;
   }).join('; ');
   
@@ -137,9 +137,9 @@ import {network} from "./network"
         ? generateTypeFromProperties(endpoint.requestBody) 
         : "any";
             const endpointgenerated = `
-export const ${endpoint.operationId} = (${
-                endpoint.path.includes("{") && (state.useTypeScript ? `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}: string`)},` : `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}`)},`) || "" 
-            } ${(["post", "put", "patch"].includes(endpoint.method.toLowerCase()) 
+            /** ${endpoint.description ?? ""} ${endpoint.summary ?? ""} */
+export const ${endpoint.operationId} = (${endpoint.path.includes("{") && (state.useTypeScript ? `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}: string`)},` : `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}`)},`) || "" 
+            }${(["post", "put", "patch"].includes(endpoint.method.toLowerCase()) 
                     ? (state.useTypeScript && endpoint.requestBody != "null" ? `data: ${requestBodyType}` : "data") 
                     : "")}) =>
         network(\`${endpoint.path.replaceAll("{" , "${")}\` , "${endpoint.method.toUpperCase()}" ${["post", "put", "patch"].includes(endpoint.method.toLowerCase()) && endpoint.requestBody != "null" ? ",data" : ""})
