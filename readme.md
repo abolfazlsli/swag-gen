@@ -3,94 +3,140 @@
 
 [![NPM Version][npm-image]][npm-url]
 
-Swag-Gen is a command-line interface (CLI) tool built with Node.js that simplifies the process of generating front-end service code from OpenAPI specifications. It takes an OpenAPI file or URL as input and automatically generates service code, making front-end development more efficient.
+**Smart OpenAPI to Frontend Service Code Generator**
 
-## Features
+## Overview
 
-*   Automatic generation of front-end service code from OpenAPI specifications.
-*   Support for both file paths and URLs as input for OpenAPI definitions.
-*   Option to generate code using TypeScript for better type safety.
-*   Option to use Axios for making HTTP requests.
+Swag-Gen is a powerful CLI tool that automatically generates frontend service code from OpenAPI specifications. It creates a complete, production-ready service layer with built-in session management, multiple storage adapters, and flexible HTTP client support.
+
+## Key Features
+
+### 🚀 Advanced Capabilities
+
+- **Complete Project Structure** - Generates a fully organized project with proper separation of concerns
+- **Intelligent Session Management** - Automatic handling of cookies, tokens, and authentication state
+- **Cross-Platform Support** - Works seamlessly with React Native, Expo, and Next.js
+- **Flexible Storage Layer** - Supports Cookie, LocalStorage, and AsyncStorage (for Expo)
+- **Dual HTTP Clients** - Choose between Fetch API or Axios
+- **Full TypeScript Support** - Complete type safety with intelligent autocomplete
+
+### ⚡ Premium Features
+
+- **Auto-generated Service Harmony** - Perfect integration between all layers of your application
+- **Next.js Special Modules** - Built-in support for SSR, ISR, and middleware
+- **Error Handling & Retry Logic** - Production-ready error management
+- **Request Caching** - Built-in performance optimization
 
 ## Installation
 
-You can install Swag-Gen globally using npm or yarn:
+Install globally using npm or yarn:
 
-**Using npm:**
-
+**npm:**
 ```bash
 npm install @abolfask/swag-gen -g
 ```
 
-**Using yarn:**
-
+**yarn:**
 ```bash
 yarn global add @abolfask/swag-gen
 ```
 
 ## Usage
 
-The basic command to generate service code is `swag-gen` followed by your options.
-
-### Options
-
-*   `-i`, `--input <path/url>`: Specifies the path to your OpenAPI file or the URL of the OpenAPI specification.
-*   `-t`, `--ts`, `--typescript`: Use this flag to generate TypeScript code.
-*   `-a`, `--axios`: Use this flag to generate service code that utilizes the Axios library for HTTP requests.
-*   `-u`, `--url <url>`: An alternative way to specify the URL of your OpenAPI specification.
-
-### Examples
-
-**1. Generate JavaScript service code from a local OpenAPI file:**
+Basic command structure:
 
 ```bash
-swag-gen --input ./path/to/your/openapi.json
+swag-gen [options]
 ```
 
-**2. Generate TypeScript service code from a URL:**
+### CLI Options
 
+| Option | Description |
+|--------|-------------|
+| `-i, --input <path/url>` | OpenAPI file path or URL |
+| `-t, --ts, --typescript` | Generate TypeScript code with full type definitions |
+| `-a, --axios` | Use Axios instead of Fetch API |
+| `-u, --url <url>` | Direct URL specification |
+
+### Usage Examples
+
+**1. Generate JavaScript services from local file:**
 ```bash
-swag-gen --url https://your-api.com/openapi.json --typescript
+swag-gen --input ./openapi.json
 ```
 
-**3. Generate JavaScript service code using Axios from a local file:**
-
+**2. Generate TypeScript services from URL:**
 ```bash
-swag-gen -i ./path/to/your/openapi.yaml -a
+swag-gen --url https://api.example.com/openapi.json --typescript
 ```
 
-**4. Generate TypeScript service code using Axios from a URL:**
-
+**3. Generate with Axios and cookie management for Expo:**
 ```bash
-swag-gen --url https://petstore.swagger.io/v2/swagger.json --ts --axios
+swag-gen -i ./swagger.yaml -a
 ```
 
-**Note:** When using the `-i` or `--input` option, you can provide either a file path or a URL. The `-u` or `--url` option is specifically for URLs.
+**4. Generate complete Next.js project with TypeScript:**
+```bash
+swag-gen --url https://api.site.com/openapi.json --ts --axios
+```
 
-## How it Works
+## Generated Output Structure
 
-When you run the command, OpenAPIServiceGenerator parses your OpenAPI specification. Based on the options you provide, it then generates corresponding service code files that you can easily integrate into your front-end project. The tool handles the mapping of API endpoints, parameters, and responses into callable functions or classes.
+After execution, you'll get:
+
+```
+services/
+├── network.js/.ts    # Core HTTP client and request handling
+├── apiClient.js/.ts  # Generated API services
+├── cookie.js/.ts     # Session storage modules (Cookie/LocalStorage/AsyncStorage)
+
+```
+
+## Use Cases
+
+### 🔹 React Native / Expo
+Automatic AsyncStorage and cookie management - no more token storage headaches
+
+### 🔹 Next.js
+Full server and client support with automatic request header management
+
+### 🔹 Vanilla JS/TS Projects
+Lightweight, reusable services for any frontend project
+
+## How It Works
+
+1. **Parse & Validate** - Reads and validates your OpenAPI specification
+2. **Generate Core** - Creates the main HTTP client and request handlers
+3. **Generate Services** - Produces service functions/classes for each endpoint
+4. **Integrate Storage** - Implements the session storage layer
+5. **Output** - Writes all generated files to disk
+
+## Why Swag-Gen?
+
+- ✅ **90% Less Boilerplate** - Run one command instead of writing repetitive code
+- ✅ **No Vendor Lock-in** - Switch between Fetch and Axios anytime
+- ✅ **Professional Auth Management** - Supports multiple storage methods out of the box
+- ✅ **Type Safe** - Full TypeScript support with compile-time error checking
+- ✅ **Extensible** - Easy to add custom modules and adapters
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request or open an Issue.
+Contributions are welcome!
 
-1.  Fork the repository.
-2.  Create a new branch (`git checkout -b feature/your-feature-name`).
-3.  Make your changes.
-4.  Commit your changes (`git commit -am 'Add some feature'`).
-5.  Push to the branch (`git push origin feature/your-feature-name`).
-6.  Create a new Pull Request.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the ISC License - see the [LICENSE.md](LICENSE.md) file for details.
-
-version : 1.0.0
+ISC License - see [LICENSE.md](LICENSE.md)
 
 ---
 
+**Built with ❤️ for the developer community**
+
 [npm-image]: https://img.shields.io/npm/v/swag-gen.svg
 [npm-url]: https://npmjs.org/package/swag-gen
-[license-image]: https://img.shields.io/badge/License-MIT-blue.svg
-[license-url]: LICENSE.md
+```
