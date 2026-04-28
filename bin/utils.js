@@ -5,6 +5,7 @@ const fs = require('fs');
 const netoworkSource = require("./surces/network")
 const types = require("./surces/types")
 const ora = require("ora")
+const cookieMethods = require("./surces/cookies")
 
 const handlers ={
      "-i" : {
@@ -34,7 +35,12 @@ const handlers ={
     "--url" : {
         service : (val) => setUrl(val)
     } ,
-    
+    "--cookie-method" :{
+        service : (val) => setCookieMethod(val)
+    },
+    "-c-m" :{
+        service : (val) => setCookieMethod(val)
+    },
 };
 
 
@@ -55,6 +61,17 @@ const setUrl = (value) => {
 const setDir = (value) => {
   state.dir = value;
 };
+
+const setCookieMethod = (value) => {
+    state.cookieMethod = value
+}
+
+
+const getRandomStickerArrow = () => {
+    const stickers = [";)", "3]", "3>", ":)", ":D", ":]", "=)", "^_^", "(>‿<)", "(◕‿◕)", "♥‿♥", "(•‿•)", "(¬‿¬)", "✌(◕‿-)✌", "٩(◕‿◕)۶"];
+    return stickers[Math.floor(Math.random() * stickers.length)];
+};
+
 
 async function parserSwagger (input) {
     return await SwaggerParser.dereference(input)
@@ -127,8 +144,6 @@ const handleGenerate = async () => {
     console.log("Extracting endpoints...");
 
     const endpoints = extractEndpoints(apis);
-    // console.log("Options:", state.useAxios, state.useTypeScript, state.url, state.dir)
-    // loading()
     let codeoutput = `
 import {network} from "./network"
     `
@@ -137,8 +152,8 @@ import {network} from "./network"
         ? generateTypeFromProperties(endpoint.requestBody) 
         : "any";
             const endpointgenerated = `
-            /** ${endpoint.description ?? ""} ${endpoint.summary ?? ""} */
-export const ${endpoint.operationId} = (${endpoint.path.includes("{") && (state.useTypeScript ? `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}: string`)},` : `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}`)},`) || "" 
+            /* ${endpoint.description ?? ""} ${endpoint.summary ?? ""} */
+export const ${endpoint?.operationId ?? endpoint.path.replaceAll("/" , "").replaceAll("-" , "").replaceAll("{" , "By").replaceAll("}" , "")} = (${endpoint.path.includes("{") && (state.useTypeScript ? `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}: string`)},` : `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}`)},`) || "" 
             }${(["post", "put", "patch"].includes(endpoint.method.toLowerCase()) 
                     ? (state.useTypeScript && endpoint.requestBody != "null" ? `data: ${requestBodyType}` : "data") 
                     : "")}) =>
@@ -147,7 +162,7 @@ export const ${endpoint.operationId} = (${endpoint.path.includes("{") && (state.
                  `;
                     codeoutput += endpointgenerated
             })
-            ora.oraPromise(() => codeGenerator(codeoutput) , {spinner : "dots" , text : "Generating codes ..." , successText : "Codes generated <3 [;"})
+            ora.oraPromise(() => codeGenerator(codeoutput) , {spinner : "dots" , text : "Generating codes ..." , successText : `Codes generated <3 ${getRandomStickerArrow()}`})
 }
 
 
@@ -157,6 +172,13 @@ const help = () => {
     -t, --ts, --typescript: Use this flag to generate TypeScript code.
     -a, --axios: Use this flag to generate service code that utilizes the Axios library for HTTP requests.
     -u, --url <url>: An alternative way to specify the URL of your OpenAPI specification.
+    -c-m --cookie-method <method> : For createing your cookies and manage thems , the <method> can be :
+                      custom : just give you methods and you have to program them
+                      localStorge : create methods using localStorge 
+                      nookie : create methods using nookie module
+                      expo-go : create methods using expo-secure-store for android ,
+                                !!! just in "TypeScript" and "React Native" useable !!!
+                      sessionStorge : create methods using sessionStroge
     `)
 }
 
@@ -181,12 +203,15 @@ const codeGenerator = async (services) => {
   fs.writeFileSync(`./services/apiClient.${format}`, services, 'utf-8');
   fs.writeFileSync(`./services/cookie.${format}` , "" , "utf-8")
   fs.writeFileSync(`./services/apiCustom.${format}` , `
-    // place to write your custom APIs endpoints
+    /* 
+        place to write your custom APIs endpoints
+        write your custom endpoints here and dont forget import and export everythings, good luck.
+     */
     ` , "utf-8")
-    return
+    return 
 
 }
 
 module.exports = {
-    handlers , parseRawCLI , extractEndpoints , parserSwagger , setUseAxios , setUseTypeScript , setUrl , setDir ,handleGenerate
+    handlers , parseRawCLI , extractEndpoints , parserSwagger , setUseAxios , setUseTypeScript , setUrl , setDir ,handleGenerate , setCookieMethod
 }
