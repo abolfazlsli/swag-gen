@@ -2,7 +2,6 @@
 # Swag-Gen
 
 [![NPM Version][npm-image]][npm-url]
-[![License][license-image]][license-url]
 
 Swag-Gen is a command-line interface (CLI) tool built with Node.js that simplifies the process of generating front-end service code from OpenAPI specifications. It takes an OpenAPI file or URL as input and automatically generates service code, making front-end development more efficient.
 
@@ -85,7 +84,7 @@ Contributions are welcome! Please feel free to submit a Pull Request or open an 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the ISC License - see the [LICENSE.md](LICENSE.md) file for details.
 
 version : 1.0.0
 
