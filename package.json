@@ -1,21 +1,30 @@
 {
-  "name": "swag-gen",
+  "name": "@abolfask/swag-gen",
   "version": "1.0.0",
-  "description": "",
+  "description": "Swag-Gen is a command-line interface (CLI) tool built with Node.js that simplifies the process of generating front-end service code from OpenAPI specifications. It takes an OpenAPI file or URL as input and automatically generates service code, making front-end development more efficient.",
+  "keywords": [],
+  "homepage": "https://github.com/abolfazlsli/swag-gen#readme",
+  "bugs": {
+    "url": "https://github.com/abolfazlsli/swag-gen/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abolfazlsli/swag-gen.git"
+  },
+  "license": "ISC",
+  "author": "Abolfazl Salehi",
+  "type": "commonjs",
   "main": "index.js",
   "bin": {
-    "swag-gen": "./bin/index.js"
+    "swag-gen": "bin/index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",
     "commander": "^14.0.3",
     "ora": "^9.3.0"
-  }
+  },
+  "devDependencies": {}
 }
