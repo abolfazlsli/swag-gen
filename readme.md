@@ -94,4 +94,3 @@ version : 1.0.0
 [npm-url]: https://npmjs.org/package/swag-gen
 [license-image]: https://img.shields.io/badge/License-MIT-blue.svg
 [license-url]: LICENSE.md
-```
