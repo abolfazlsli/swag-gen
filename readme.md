@@ -1,4 +1,4 @@
-```markdown
+
 # Swag-Gen
 
 [![NPM Version][npm-image]][npm-url]
