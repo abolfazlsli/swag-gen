@@ -73,6 +73,73 @@ const getRandomStickerArrow = () => {
 };
 
 
+function toPascalCase(str) {
+    return str
+        .split(/[-_\s]/)
+        .filter(Boolean)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join("");
+}
+
+function singularize(word) {
+    if (word.endsWith("ies")) return word.slice(0, -3) + "y";
+    if (word.endsWith("ses")) return word.slice(0, -2);
+    if (word.endsWith("s") && word.length > 1) return word.slice(0, -1);
+    return word;
+}
+
+function generateOperationName(method, path, operationId) {
+    if (operationId && operationId.trim()) {
+        return operationId;
+    }
+
+    const actionMap = {
+        get: "get",
+        post: "create",
+        put: "update",
+        patch: "update",
+        delete: "delete",
+    };
+
+    const action = actionMap[method.toLowerCase()] || "call";
+
+    const segments = path
+        .split("/")
+        .filter(Boolean);
+
+    const resources = [];
+    const params = [];
+
+    for (const segment of segments) {
+        if (segment.startsWith("{") && segment.endsWith("}")) {
+            params.push(segment.slice(1, -1));
+        } else {
+            resources.push(segment);
+        }
+    }
+
+    const names = resources.map((resource, index) => {
+        if (index === resources.length - 1 && params.length) {
+            return toPascalCase(singularize(resource));
+        }
+
+        return toPascalCase(resource);
+    });
+
+    let result = action + names.join("");
+
+    if (params.length) {
+        result +=
+            "By" +
+            params
+                .map(param => toPascalCase(param))
+                .join("And");
+    }
+
+    return result;
+}
+
+
 async function parserSwagger (input) {
     return await SwaggerParser.dereference(input)
 }
@@ -153,7 +220,11 @@ import {network} from "./network"
         : "any";
             const endpointgenerated = `
             /* ${endpoint.description ?? ""} ${endpoint.summary ?? ""} */
-export const ${endpoint?.operationId ?? endpoint.path.replaceAll("/" , "").replaceAll("-" , "").replaceAll("{" , "By").replaceAll("}" , "")} = (${endpoint.path.includes("{") && (state.useTypeScript ? `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}: string`)},` : `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}`)},`) || "" 
+export const ${generateOperationName(
+    endpoint.method,
+    endpoint.path,
+    endpoint.operationId
+)} = (${endpoint.path.includes("{") && (state.useTypeScript ? `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}: string`)},` : `${endpoint.path.split("{").slice(1 , endpoint.path.split("{").length).map(item => `${item.replaceAll("}" , "").replaceAll("/" , "")}`)},`) || "" 
             }${(["post", "put", "patch"].includes(endpoint.method.toLowerCase()) 
                     ? (state.useTypeScript && endpoint.requestBody != "null" ? `data: ${requestBodyType}` : "data") 
                     : "")}) =>
