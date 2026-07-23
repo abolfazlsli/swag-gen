@@ -7,6 +7,36 @@ const SWAGGER_TYPE_TO_TS = {
   boolean: "boolean",
 };
 
+
+/**
+ * @param {Object} param
+ * @returns {string}
+ */
+function resolveQueryParamType(param) {
+  const schema = param.schema || param;
+
+  if (Array.isArray(schema.enum) && schema.enum.length) {
+    return schema.enum.map((value) => JSON.stringify(value)).join(" | ");
+  }
+
+  return resolveFieldType(schema);
+}
+
+/**
+ * 
+ * @param {import("./types").EndpointParam[]} parameters
+ * @returns {string}
+ */
+function queryParamsToTsType(parameters) {
+  if (!parameters || parameters.length === 0) return "any";
+
+  const fields = parameters.map((param) => {
+    const optional = param.required ? "" : "?";
+    return `${param.name}${optional}: ${resolveQueryParamType(param)}`;
+  });
+
+  return `{ ${fields.join("; ")} }`;
+}
 /**
  * Converts an OpenAPI "properties" object (application/json body) into an
  * inline TypeScript type string, e.g. `{ id: number; name: string }`.
@@ -55,4 +85,8 @@ function resolveFieldType(value, opts = {}) {
   );
 }
 
-module.exports = { propertiesToTsType, formDataToTsType };
+module.exports = { propertiesToTsType ,
+                  formDataToTsType,
+                  queryParamsToTsType,
+                  resolveQueryParamType,
+                };

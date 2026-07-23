@@ -27,6 +27,8 @@ function extractEndpoints(api) {
   for (const [routePath, methods] of Object.entries(api.paths || {})) {
     for (const [method, route] of Object.entries(methods)) {
       const content = route.requestBody?.content || {};
+      const jsonSchema = content[JSON_CONTENT_TYPE]?.schema;
+      const isArrayBody = jsonSchema?.type === "array";
 
       endpoints.push({
         method,
@@ -36,7 +38,10 @@ function extractEndpoints(api) {
         operationId: route.operationId,
         tag: route.tags?.[0] || "common",
         parameters: route.parameters,
-        requestBody: content[JSON_CONTENT_TYPE]?.schema?.properties ?? null,
+        requestBody: isArrayBody
+          ? (jsonSchema.items?.properties ?? null)
+          : (jsonSchema?.properties ?? null),
+        isArrayBody,
         formData: content[FORM_CONTENT_TYPE]?.schema?.properties ?? null,
       });
     }

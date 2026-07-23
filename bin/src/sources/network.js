@@ -12,6 +12,17 @@
 
 const JsNetworkFetch = `const BASE_URL = ""; // TODO: set your API base URL
 
+const buildQueryString = (params) => {
+  if (!params) return "";
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+    query.append(key, value);
+  });
+  const qs = query.toString();
+  return qs ? \`?\${qs}\` : "";
+};
+
 export const buildFormData = (data) => {
   const formData = new FormData();
   Object.entries(data).forEach(([key, value]) => {
@@ -24,10 +35,11 @@ export const buildFormData = (data) => {
   return formData;
 };
 
-export const network = async (path, method = "GET", body) => {
+export const network = async (path, method = "GET", body, params) => {
   const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+  const url = \`\${BASE_URL}\${path}\${buildQueryString(params)}\`;
 
-  const response = await fetch(\`\${BASE_URL}\${path}\`, {
+  const response = await fetch(url, {
     method,
     headers: isFormData ? undefined : { "Content-Type": "application/json" },
     body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
@@ -44,7 +56,27 @@ export const network = async (path, method = "GET", body) => {
 `;
 
 const TsNetworkFetch = `const BASE_URL = ""; // TODO: set your API base URL
+type QueryValue = string | number | boolean | Array<string | number | boolean> | null | undefined;
+type QueryParams = Record<string, QueryValue>;
 
+const buildQueryString = (params?: QueryParams): string => {
+  if (!params) return "";
+
+  const query = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => query.append(key, String(item)));
+    } else {
+      query.append(key, String(value));
+    }
+  });
+
+  const qs = query.toString();
+  return qs ? \`?\${qs}\` : "";
+};
 export const buildFormData = (data: Record<string, any>): FormData => {
   const formData = new FormData();
   Object.entries(data).forEach(([key, value]) => {
@@ -60,11 +92,13 @@ export const buildFormData = (data: Record<string, any>): FormData => {
 export const network = async <T = any>(
   path: string,
   method: string = "GET",
-  body?: any
+  body?: any,
+  params?: QueryParams
 ): Promise<T> => {
   const isFormData = body instanceof FormData;
+  const url = \`\${BASE_URL}\${path}'\${buildQueryString(params)}\`;
 
-  const response = await fetch(\`\${BASE_URL}\${path}\`, {
+  const response = await fetch(url, {
     method,
     headers: isFormData ? undefined : { "Content-Type": "application/json" },
     body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
@@ -99,13 +133,14 @@ export const buildFormData = (data) => {
   return formData;
 };
 
-export const network = async (path, method = "GET", body) => {
+export const network = async (path, method = "GET", body, params) => {
   const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
 
   const { data } = await client.request({
     url: path,
     method,
     data: body,
+    params,
     headers: isFormData ? { "Content-Type": "multipart/form-data" } : undefined,
   });
 
@@ -136,6 +171,7 @@ export const network = async <T = any>(
   path: string,
   method: string = "GET",
   body?: any
+  params? : any
 ): Promise<T> => {
   const isFormData = body instanceof FormData;
 
@@ -143,6 +179,7 @@ export const network = async <T = any>(
     url: path,
     method,
     data: body,
+    params,
     headers: isFormData ? { "Content-Type": "multipart/form-data" } : undefined,
   });
 
