@@ -10,7 +10,9 @@
  * Swap the `BASE_URL` placeholder for your real API origin after generation.
  */
 
-const JsNetworkFetch = `const BASE_URL = ""; // TODO: set your API base URL
+const JsNetworkFetch = `import {getCookie} from "./cookie"
+const BASE_URL = ""; // TODO: set your API base URL
+const token_name = "token_name" ; // TODO: set your token name (default : "token_name")
 
 const buildQueryString = (params) => {
   if (!params) return "";
@@ -41,7 +43,7 @@ export const network = async (path, method = "GET", body, params) => {
 
   const response = await fetch(url, {
     method,
-    headers: isFormData ? undefined : { "Content-Type": "application/json" },
+    headers: isFormData ? { "Content-Type": "multipart/form-data" , "Authorization" : \`Bearer \${getCookie(token_name)}\` } : { "Content-Type": "application/json" , "Authorization" : \`Bearer \${getCookie(token_name)}\` },
     body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
     credentials: "include",
   });
@@ -55,7 +57,9 @@ export const network = async (path, method = "GET", body, params) => {
 };
 `;
 
-const TsNetworkFetch = `const BASE_URL = ""; // TODO: set your API base URL
+const TsNetworkFetch = `import {getCookie} from "./cookie"
+const BASE_URL = ""; // TODO: set your API base URL
+const token_name = "token_name" ; // TODO: set your token name (default : "token_name")
 type QueryValue = string | number | boolean | Array<string | number | boolean> | null | undefined;
 type QueryParams = Record<string, QueryValue>;
 
@@ -100,7 +104,7 @@ export const network = async <T = any>(
 
   const response = await fetch(url, {
     method,
-    headers: isFormData ? undefined : { "Content-Type": "application/json" },
+    headers: isFormData ? { "Content-Type": "multipart/form-data" , "Authorization" : \`Bearer \${getCookie(token_name)}\` } : { "Content-Type": "application/json" , "Authorization" : \`Bearer \${getCookie(token_name)}\` },
     body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
     credentials: "include",
   });
@@ -115,7 +119,8 @@ export const network = async <T = any>(
 `;
 
 const JsNetworkAxios = `import axios from "axios";
-
+import {getCookie} from "./cookie"
+const token_name = "token_name" ; // TODO: set your token name (default : "token_name")
 const client = axios.create({
   baseURL: "", // TODO: set your API base URL
   withCredentials: true,
@@ -141,15 +146,16 @@ export const network = async (path, method = "GET", body, params) => {
     method,
     data: body,
     params,
-    headers: isFormData ? { "Content-Type": "multipart/form-data" } : undefined,
+    headers: isFormData ? { "Content-Type": "multipart/form-data" , "Authorization" : \`Bearer \${getCookie(token_name)}\` } : { "Content-Type": "application/json" , "Authorization" : \`Bearer \${getCookie(token_name)}\` },
   });
 
   return data;
 };
 `;
 
-const TsNetworkAxios = `import axios from "axios";
-
+const TsNetworkAxios = `import {getCookie} from "./cookie"
+import axios from "axios";
+const token_name = "token_name" ; // TODO: set your token name (default : "token_name")
 const client = axios.create({
   baseURL: "", // TODO: set your API base URL
   withCredentials: true,
@@ -180,7 +186,7 @@ export const network = async <T = any>(
     method,
     data: body,
     params,
-    headers: isFormData ? { "Content-Type": "multipart/form-data" } : undefined,
+    headers: isFormData ? { "Content-Type": "multipart/form-data" , "Authorization" : \`Bearer \${getCookie(token_name)}\` } : { "Content-Type": "application/json" , "Authorization" : \`Bearer \${getCookie(token_name)}\` },,
   });
 
   return data;

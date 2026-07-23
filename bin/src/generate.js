@@ -54,6 +54,12 @@ function ensureOutputDir() {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 }
 
+function resolveCookieSourceKey() {
+  if (!state.cookieMethod) return null;
+  if (state.cookieMethod === "expo-go") return "expo-go";
+  return `${state.cookieMethod}${state.useTypeScript ? "Ts" : "Js"}`;
+}
+
 /** Writes network.{ext}, types.ts (TS only), cookie.{ext}, apiCustom.{ext}. */
 function writeSharedFiles() {
   const ext = state.useTypeScript ? "ts" : "js";
@@ -67,7 +73,8 @@ function writeSharedFiles() {
     : (state.useTypeScript ? network.TsNetworkFetch : network.JsNetworkFetch);
   fs.writeFileSync(path.join(OUTPUT_DIR, `network.${ext}`), networkSource, "utf-8");
 
-  const cookieSource = cookies[state.cookieMethod] ?? "";
+  const cookieKey = resolveCookieSourceKey();
+  const cookieSource = cookieKey ? (cookies[cookieKey] ?? "") : "";
   fs.writeFileSync(path.join(OUTPUT_DIR, `cookie.${ext}`), cookieSource, "utf-8");
 
   fs.writeFileSync(
